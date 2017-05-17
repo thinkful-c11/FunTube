@@ -16,7 +16,6 @@ function getInfo(search){
   }
   $.getJSON(yTube, query, function(data){
       setResults(appState,data.items);
-      console.log(data);
       render(appState, $('.js-results'));
   });
 }
@@ -40,7 +39,8 @@ function Redirect(url){
 function render(state, element){
   let html = '';
   state.results.map(result => {
-    html += `<li><img src='${result.snippet.thumbnails.default.url}' onclick="Redirect('https://www.youtube.com/watch?v=${result.id.videoId}')"></li>`;
+    html += `<li> ${result.snippet.title} </li>
+              <li><img src='${result.snippet.thumbnails.medium.url}' onclick="Redirect('https://www.youtube.com/watch?v=${result.id.videoId}')"></li>`;
     console.log(result.snippet.thumbnails.default.url);
   })
   element.html(html);
