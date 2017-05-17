@@ -16,7 +16,7 @@ function getInfo(search){
   }
   $.getJSON(yTube, query, function(data){
       setResults(appState,data.items);
-      //console.log(data);
+      console.log(data);
       render(appState, $('.js-results'));
   });
 }
@@ -32,11 +32,15 @@ function setResults(state, results){
   state.results = results;
 }
 
+function Redirect(url){
+  window.location=url;
+}
+
 //render functions
 function render(state, element){
   let html = '';
   state.results.map(result => {
-    html += `<li><img src='${result.snippet.thumbnails.default.url}' ></li>`;
+    html += `<li><img src='${result.snippet.thumbnails.default.url}' onclick="Redirect('https://www.youtube.com/watch?v=${result.id.videoId}')"></li>`;
     console.log(result.snippet.thumbnails.default.url);
   })
   element.html(html);
@@ -50,6 +54,7 @@ function addListeners(){
     let topic = $(event.currentTarget).find('.js-topic').val();
     getInfo(topic);
   })
+
 }
 
 $(function (){
