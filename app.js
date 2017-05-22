@@ -6,7 +6,8 @@ var yTube = 'https://www.googleapis.com/youtube/v3/search';
 const appState = {
   results: [],
   nextPage: " ",
-  prevPage: " "
+  prevPage: " ",
+  q: ""
 }
 
 //AJAX function
@@ -16,15 +17,17 @@ function getInfo(search){
     part: 'snippet',
     key:'AIzaSyDLOpOm5iorBjZs6qrTcu_80-sRwAC_JdU'
   }
-  $.getJSON(yTube, query, function(data){
+  $.getJSON(yTube, query, function(data){ debugger;
     if(data.prevPageToken){
       appState.prevPage = data.prevPageToken;
       renderPrev(appState, $('#pageTokenPrev'));
     }
-      appState.nextPage = data.nextPageToken;
+      //appState.nextPage = data.nextPageToken;
       setResults(appState,data.items);
       getNextPage(appState, data.nextPageToken);
+      getPrevPage(appState, data.prevPageToken);
       render(appState, $('.js-results'));
+      setQuery(appState, query);
       renderNext(appState, $('#pageTokenNext'));
   });
 }
@@ -36,12 +39,20 @@ function getInfo(search){
 // });
 
 //mod functions
+function setQuery(state, query){
+  state.q = query;
+}
+
 function setResults(state, results){
   state.results = results;
 }
 
 function Redirect(url){
   window.location=url;
+}
+
+function getPrevPage(state, prevPage){
+  state.prevPage = prevPage;
 }
 
 function getNextPage(state, nextPage){
@@ -87,11 +98,11 @@ function addListeners(){
     getInfo(move);
   })
 
-  $('#tokenNext').submit(function(event){
+  $('#pageTokenNext').submit(function(event){
     event.preventDefault();
-    //let move = $('#pageTokenPrev').find('#tokenNext').val();
-    consol.log('a', move);
-    //getInfo(move);
+    let move = $('#pageTokenNext').find('#tokenNext').val();
+    console.log('a', move);
+    getInfo(move);
   })
 
 }
