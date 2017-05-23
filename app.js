@@ -7,17 +7,25 @@ const appState = {
   results: [],
   nextPage: " ",
   prevPage: " ",
-  q: ""
+  q: " "
 }
 
+//let nextPageToken = " ";
+
 //AJAX function
-function getInfo(search){
+function getInfo(search, page, searchString){
+  if(search === "") {
   var query = {
-    q: search,
+    q: searchString,
     part: 'snippet',
-    key:'AIzaSyDLOpOm5iorBjZs6qrTcu_80-sRwAC_JdU'
+    key:'AIzaSyDLOpOm5iorBjZs6qrTcu_80-sRwAC_JdU',
+    pageToken: page,
+    prevPageToken: " ",
+    searchString: searchString
+    //pageToken: 'prevPageToken'
   }
-  $.getJSON(yTube, query, function(data){ debugger;
+
+  $.getJSON(yTube, query, function(data){
     if(data.prevPageToken){
       appState.prevPage = data.prevPageToken;
       renderPrev(appState, $('#pageTokenPrev'));
@@ -30,6 +38,32 @@ function getInfo(search){
       setQuery(appState, query);
       renderNext(appState, $('#pageTokenNext'));
   });
+} else {
+  var query = {
+    q: search,
+    part: 'snippet',
+    key:'AIzaSyDLOpOm5iorBjZs6qrTcu_80-sRwAC_JdU',
+    pageToken: ' ',
+    nextPageToken: page,
+    prevPageToken: " ",
+    searchString: searchString
+    //pageToken: 'prevPageToken'
+  }
+
+  $.getJSON(yTube, query, function(data){
+    if(data.prevPageToken){
+      appState.prevPage = data.prevPageToken;
+      renderPrev(appState, $('#pageTokenPrev'));
+    }
+      //appState.nextPage = data.nextPageToken;
+      setResults(appState,data.items);
+      getNextPage(appState, data.nextPageToken);
+      getPrevPage(appState, data.prevPageToken);
+      render(appState, $('.js-results'));
+      setQuery(appState, query);
+      renderNext(appState, $('#pageTokenNext'));
+  });
+}
 }
 //Tempate for how it should work
 // getInfo('cat', function(response){
@@ -92,17 +126,21 @@ function addListeners(){
   })
 
 //Fix these listeners
-  $('#tokenPrev').submit(function(event){
+  $('#pageTokenPrev').submit(function(event){
     event.preventDefault();
-    let move = $(event.currentTarget).find('#tokenPrev').val();
-    getInfo(move);
+    let move = $('#pageTokenPrev').find('#tokenPrev').val();
+    let page = appState.prevPage;
+    let search = appState.q.q;
+    getInfo(move, page, search);
   })
 
   $('#pageTokenNext').submit(function(event){
     event.preventDefault();
     let move = $('#pageTokenNext').find('#tokenNext').val();
+    let page = appState.nextPage;
+    let search = appState.q.q;
     console.log('a', move);
-    getInfo(move);
+    getInfo(move, page, search);
   })
 
 }
